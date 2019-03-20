@@ -31,8 +31,8 @@ I've included an exported postman collection in the root directory that can be u
 
 # Scalability
 
-You could deply the service to a docker swarm and scale the number of containers accordingly.
+You could deploy the service to a docker swarm and scale the number of containers accordingly.
 
 # Future improvement / didn't complete
 
-- Improve test coverage
+- include a test suite
