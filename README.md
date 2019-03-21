@@ -33,6 +33,8 @@ I've included an exported postman collection in the root directory that can be u
 
 You could deploy the service to a docker swarm and scale the number of containers accordingly.
 
-# Future improvement / didn't complete
+# Future improvement / didn't complete due to time
 
-- include a test suite
+- Include a test suite
+- Git commit pattern wasn't as requested and is something i would implement going forward.
+- Implement authentication
