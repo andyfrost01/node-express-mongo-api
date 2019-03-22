@@ -10,7 +10,6 @@ let should = chai.should();
 chai.use(chaiHttp);
 describe("Streams", () => {
   beforeEach(done => {
-    //Before each test we empty the database
     Stream.remove({}, err => {
       done();
     });
@@ -71,37 +70,39 @@ describe("/POST stream", () => {
       { user: "1", session: "123459876", stream: "567892" },
       { user: "1", session: "123459876", stream: "567892" }
     ];
-    chai
-      .request(server)
-      .post("/stream/add")
-      .send(streams[0])
-      .end(() => {
-        chai
-          .request(server)
-          .post("/stream/add")
-          .send(streams[1])
-          .end(() => {
-            chai
-              .request(server)
-              .post("/stream/add")
-              .send(streams[2])
-              .end(() => {
-                chai
-                  .request(server)
-                  .post("/stream/add")
-                  .send(streams[3])
-                  .end((err, res) => {
-                    res.should.have.status(500);
-                    res.body.should.be.a("string");
-                    res.body.should.be.eql("Too many streams");
-                    done();
-                  });
-              });
-          });
-      });
+    Stream.create(streams, err => {
+      chai
+        .request(server)
+        .post("/stream/add")
+        .send(streams[3])
+        .end((err, res) => {
+          res.should.have.status(500);
+          res.body.should.be.a("string");
+          res.body.should.be.eql("Too many streams");
+          done();
+        });
+    });
+  });
+  it("it should return a stream count for a user", done => {
+    let streams = [
+      { user: "1", session: "123456789", stream: "123456" },
+      { user: "1", session: "987654321", stream: "125622" },
+      { user: "2", session: "123459876", stream: "567892" }
+    ];
+    Stream.create(streams, err => {
+      chai
+        .request(server)
+        .post("/getStreamCount")
+        .send({ user: "1" })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a("number");
+          res.body.should.be.equal(2);
+          done();
+        });
+    });
   });
 });
-
 /*
  *  Test the /DELETE route
  */
