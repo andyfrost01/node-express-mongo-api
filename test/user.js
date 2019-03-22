@@ -80,4 +80,19 @@ describe("/DELETE user", () => {
         });
     });
   });
+  it("it should fail to delete a user and return no valid user message", done => {
+    let userToBeDeleted = {
+      user: "2"
+    };
+    chai
+      .request(server)
+      .delete("/user")
+      .send(userToBeDeleted)
+      .end((err, res) => {
+        res.should.have.status(500);
+        res.body.should.be.a("string");
+        res.body.should.be.eql("no valid user");
+        done();
+      });
+  });
 });
