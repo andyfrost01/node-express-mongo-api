@@ -37,6 +37,12 @@ describe("Streams", () => {
  * Test the /POST route
  */
 describe("/POST stream", () => {
+  beforeEach(done => {
+    //Before each test we empty the database
+    Stream.remove({}, err => {
+      done();
+    });
+  });
   it("it should create a stream and return the new stream object", done => {
     let stream = {
       user: "1",
@@ -58,6 +64,42 @@ describe("/POST stream", () => {
         done();
       });
   });
+  it("it shouldn't create a stream if the user already has three streams and return a too many streams error", done => {
+    let streams = [
+      { user: "1", session: "123456789", stream: "123456" },
+      { user: "1", session: "987654321", stream: "125622" },
+      { user: "1", session: "123459876", stream: "567892" },
+      { user: "1", session: "123459876", stream: "567892" }
+    ];
+    chai
+      .request(server)
+      .post("/stream/add")
+      .send(streams[0])
+      .end(() => {
+        chai
+          .request(server)
+          .post("/stream/add")
+          .send(streams[1])
+          .end(() => {
+            chai
+              .request(server)
+              .post("/stream/add")
+              .send(streams[2])
+              .end(() => {
+                chai
+                  .request(server)
+                  .post("/stream/add")
+                  .send(streams[3])
+                  .end((err, res) => {
+                    res.should.have.status(500);
+                    res.body.should.be.a("string");
+                    res.body.should.be.eql("Too many streams");
+                    done();
+                  });
+              });
+          });
+      });
+  });
 });
 
 /*
@@ -65,6 +107,12 @@ describe("/POST stream", () => {
  */
 
 describe("/DELETE stream", () => {
+  beforeEach(done => {
+    //Before each test we empty the database
+    Stream.remove({}, err => {
+      done();
+    });
+  });
   it("it should delete a stream and return success message", done => {
     let stream = new Stream({
       _id: "5c950d7f5e859a0018c63faf",
